@@ -15,7 +15,7 @@ script:
 # Note the first part of the name is the docker id
 after_success:
     - docker build -t euphoman/multi-client  ./client
-    - docker build -t euphoman/muiti-nginx ./nginx
+    - docker build -t euphoman/multi-nginx ./nginx
     - docker build -t euphoman/multi-server ./server
     - docker build -t euphoman/multi-worker ./worker
 
