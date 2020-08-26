@@ -1,0 +1,63 @@
+version: '3'
+services: 
+    postgres: 
+        image: 'postgres:latest'
+        environment: 
+            # password for the postgres database
+            - POSTGRES_PASSWORD=postgres_password
+    redis: 
+        image: 'redis:latest'
+    nginx:
+        # this service depends on api and client services - so wait until they're up
+        depends_on: 
+            - api
+            - client
+        # if a crash occurs, restart
+        restart: always
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./nginx
+        ports:
+            # local host port 3050 maps to container port 80
+            - '3050:80'
+    api: 
+        build: 
+            dockerfile: Dockerfile.dev
+            context: ./server
+        depends_on: 
+            - postgres
+        # /app/node_modules says do not alter this directory in container
+        # ./server:app says that the ./server directory is the copied into /app directory in the service container of
+        # course with the exceptin of the /app/node_modules directory
+        volumes: 
+            - /app/node_modules
+            - ./server:/app
+        # NOTE: If you define a variable but do not use ='string' that means use the host maching
+        # environment variable with the same name
+        environment: 
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - PGUSER=postgres
+            - PGHOST=postgres
+            - PGDATABASE=postgres
+            - PGPASSWORD=postgres_password
+            - PGPORT=5432
+    client:
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./client
+        volumes:
+            - /app/node_modules
+            - ./client:/app
+        # allow container to receive standard input
+        stdin_open: true
+    worker:
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./worker
+        volumes: 
+            - /app/node_modules
+            - ./worker:/app
+        environment: 
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
