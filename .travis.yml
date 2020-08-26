@@ -1,0 +1,28 @@
+sudo: required
+services:
+    - docker
+
+# We are only running the react client app test. so this is this 
+# the only before install and script to execute the test
+before_install: 
+    - docker build -t edgould/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+    - docker run -e CI=true edgould/react-test npm test
+
+# Here we build production versions of all the servers and push them off
+# to Docker hub. No need to state file name for it uses Dockerfile by default
+after_success:
+    - docker build -t edgould/multi-client  ./client
+    - docker build -t edgould/muiti-nginx ./nginx
+    - docker build -t edgould/multi-server ./server
+    - docker build -t edgould/multi-worker ./worker
+
+    # Login into docker CLI. We will use enviroment variables created in the settings for this travis-ci project
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin 
+
+    # Now push the production files to docker hub
+    - docker push edgould/multi-client
+    - docker push edgould/multi-nginx
+    - docker push edgould/multi-server
+    - docker push edgould/multi-worker
