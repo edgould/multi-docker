@@ -12,11 +12,12 @@ script:
 
 # Here we build production versions of all the servers and push them off
 # to Docker hub. No need to state file name for it uses Dockerfile by default
+# Note the first part of the name is the docker id
 after_success:
-    - docker build -t edgould/multi-client  ./client
-    - docker build -t edgould/muiti-nginx ./nginx
-    - docker build -t edgould/multi-server ./server
-    - docker build -t edgould/multi-worker ./worker
+    - docker build -t euphoman/multi-client  ./client
+    - docker build -t euphoman/muiti-nginx ./nginx
+    - docker build -t euphoman/multi-server ./server
+    - docker build -t euphoman/multi-worker ./worker
 
     # Login into docker CLI. We will use enviroment variables created in the settings for this travis-ci project
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin 
