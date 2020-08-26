@@ -22,7 +22,8 @@ after_success:
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin 
 
     # Now push the production files to docker hub
-    - docker push edgould/multi-client
-    - docker push edgould/multi-nginx
-    - docker push edgould/multi-server
-    - docker push edgould/multi-worker
+    # make sure that you use correct user name that is on docker!
+    - docker push euphoman/multi-client
+    - docker push euphoman/multi-nginx
+    - docker push euphoman/multi-server
+    - docker push euphoman/multi-worker
