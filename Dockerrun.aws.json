@@ -1,0 +1,35 @@
+{
+    "AWSEBDockerrunVersion" : 2,
+    "containerDefinitions" : [
+        {
+            "name" : "client",
+            "image" : "euphoman/multi-client",
+            "hostname" : "client",
+            "essential" : false
+        },
+        {
+            "name" : "server",
+            "image" : "euphoman/multi-server",
+            "hostname" : "api",
+            "essential" : false
+        },
+        {
+            "name" : "worker",
+            "image" : "euphoman/multi-worker",
+            "essential" : false
+        },
+        {
+            "name" : "nginx",
+            "image" : "euphoman/multi-nginx",
+            "essential" : true,
+            "portMappings" : [
+                {
+                "hostPort" : 80,
+                "containerPort" : 80 
+                }
+            ],
+            "links" : ["client","server"]
+        }
+
+    ]
+}
